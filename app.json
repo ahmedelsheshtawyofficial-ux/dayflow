@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "Dayflow",
+    "slug": "dayflow",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": false,
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#F7F7F5"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.dayflow.productivity"
+    },
+    "android": {
+      "package": "com.dayflow.productivity",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#F7F7F5"
+      }
+    }
+  }
+}
