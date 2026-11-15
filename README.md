@@ -1,33 +1,24 @@
-# Sara Essam — Android MVP
+# Sara Essam — MVP v3 (Performance, Focus, Habits & Nagging Reminders)
 
-Mobile-first Arabic productivity app packaged as a native Android WebView shell. It is a separate project from Dayflow and Mahamy; the Mahamy project was used only as a reference for the GitHub Actions + Gradle APK build pattern.
+## What's improved
+- Tasks due today and overdue are surfaced on Home without needing to create another task. The date helper uses the device's local date rather than UTC.
+- Added a dedicated, visible Habits tab and daily habit log. Completing a habit gives points once per habit per local day.
+- Focus and break durations are user-configurable and saved on the device. Pomodoro alternates focus and rest; Stopwatch remains available.
+- Added configurable recurring reminders for unfinished tasks (default: every 30 minutes) and a test-notification button.
+- Android notification permission is requested at launch and can be requested again from Settings.
+- Existing localStorage data is migrated with defaults for the new settings; existing tasks, rewards, habits and notes are retained.
 
-## Included in this first build
-- Tasks with status, priority, due date/time, optional reminder, project association, and nested subtasks.
-- Projects with progress based on their tasks.
-- Monthly calendar with task markers and selected-day agenda.
-- Notes.
-- Points for completed tasks, habit check-ins, and completed focus sessions.
-- User-defined real-life rewards and point redemption history.
-- Personal challenges and achievement badges.
-- Habit tracker.
-- Pomodoro and stopwatch.
-- General reminders and Android notification scheduling through a native bridge.
-- Local persistence using WebView localStorage; JSON export for backup.
+## Build APK with GitHub Actions
+The repository root must contain `settings.gradle`, `build.gradle`, `gradle.properties`, and the `app/` folder. The workflow is `.github/workflows/build-apk.yml`.
 
-## Build APK
-The workflow is `.github/workflows/build-apk.yml`. Push to `main` or run it manually from GitHub Actions. Download the `Sara-Essam-APK` artifact.
+In GitHub: Actions → Build Sara Essam APK → Run workflow. Download `Sara-Essam-APK` from the completed run's Artifacts.
 
-## Important MVP limitations
-- Data is stored locally on this device. Cloud sync, accounts, team projects, shared challenges, and server-side backup are not included yet.
-- Android exact-alarm access and notification permission depend on Android version and device settings. Reminder scheduling is best-effort; battery restrictions may affect delivery.
-- Challenge progress is currently user-recorded. Points are awarded once per completed task; changing a completed task back to incomplete reverses its task points.
-- The project uses the same simple Android/Gradle build pattern as the supplied Mahamy project, but no Mahamy UI or app functionality is copied.
+## Important Android notification notes
+- Allow notifications for Sara Essam in Android Settings.
+- On Android 12+, exact-alarm access may be requested by Android. If denied, the app falls back to inexact idle-aware scheduling; delivery can be delayed by Android battery management.
+- Repeated nagging is scheduled while there are unfinished tasks and stops when all tasks are completed or the nagging toggle is disabled. Default interval is 30 minutes and can be changed in Settings (minimum 5 minutes).
+- Android vendors may restrict background alarms; set battery usage for Sara Essam to Unrestricted if reminders are being delayed.
+- This version does not yet restore the recurring alarm after a device reboot. That is a remaining hardening task before claiming guaranteed reminders.
 
-
-## UI Update v2 (2026-11-16)
-- Redesigned the Rewards Store as a visual collection/shop with reward cards, category icons, descriptions, point prices, and redemption actions.
-- Reward creation now supports a name, description, icon/category, and point cost.
-- Added responsive sizing for narrow Android phones and larger screens.
-- Improved bottom navigation, floating action button, modal safe-area spacing, and page bottom padding to reduce overlap/clipping on different screen heights.
-- Existing saved rewards remain compatible; older rewards receive default icons and descriptions.
+## Data
+Data remains local to the device in WebView localStorage. Keep using the same app ID (`com.saraessam.app`) and do not clear app storage when updating if you want to retain data.
