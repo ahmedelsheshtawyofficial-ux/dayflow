@@ -39,6 +39,13 @@ public class MainActivity extends Activity {
         private final MainActivity activity; private final Context context;
         AppBridge(MainActivity c) { activity=c; context=c; }
         @JavascriptInterface public void requestNotificationPermission() { activity.runOnUiThread(activity::requestNotifications); }
+        // Durable app state: Android SharedPreferences survives WebView restarts and app relaunches.
+        @JavascriptInterface public String loadAppState() {
+            return context.getSharedPreferences("sara_app_data", Context.MODE_PRIVATE).getString("state", "");
+        }
+        @JavascriptInterface public void saveAppState(String json) {
+            context.getSharedPreferences("sara_app_data", Context.MODE_PRIVATE).edit().putString("state", json).commit();
+        }
         private PendingIntent alarmIntent(String id, String title, String message, long interval) {
             Intent i = new Intent(context, ReminderReceiver.class); i.putExtra("title", title); i.putExtra("message", message); i.putExtra("repeat", interval > 0); i.putExtra("interval", interval);
             int request = id.hashCode() & 0x7fffffff;
