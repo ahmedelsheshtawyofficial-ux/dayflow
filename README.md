@@ -1,11 +1,16 @@
-# Dayflow — Android APK
-Dayflow is packaged in an Android WebView shell. GitHub Actions builds it with Java 17 and Gradle 8.9.
+# Dayflow Android
 
-## Build
-1. Upload all project files to the `main` branch.
-2. Open GitHub **Actions**.
-3. Select **Build Dayflow APK** and click **Run workflow**.
-4. Download the **Dayflow-APK** artifact after the run succeeds.
+Dayflow is a native Android shell containing a mobile-first HTML application in Android WebView.
 
-No Expo account, EAS project, Expo token, Node.js, or Yarn is required.
-The APK is a debug build for testing, not a Play Store release.
+## Build APK
+The repository includes `.github/workflows/build-apk.yml`. Push to `main` or run **Build Dayflow APK** manually from GitHub Actions. Download the `Dayflow-APK` artifact.
+
+## Current implementation
+- Home task list with filters and search
+- Add tasks with due date, time, category, priority and notes
+- Complete tasks, view task details, subtasks and delete tasks
+- Calendar with month navigation and task dates
+- Productivity insights and settings screens
+- Local persistence using Android WebView DOM storage
+
+Data is currently stored locally on the device. Cloud sync, push notifications and account sign-in are not implemented yet.
