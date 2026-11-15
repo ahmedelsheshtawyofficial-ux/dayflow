@@ -16,6 +16,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.Manifest;
 import android.content.pm.PackageManager;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
 
 public class MainActivity extends Activity {
     private WebView webView;
@@ -39,12 +43,30 @@ public class MainActivity extends Activity {
         private final MainActivity activity; private final Context context;
         AppBridge(MainActivity c) { activity=c; context=c; }
         @JavascriptInterface public void requestNotificationPermission() { activity.runOnUiThread(activity::requestNotifications); }
-        // Durable app state: Android SharedPreferences survives WebView restarts and app relaunches.
-        @JavascriptInterface public String loadAppState() {
+        // Durable state: atomic private-file write, with SharedPreferences as a recovery copy.
+        @JavascriptInterface public synchronized String loadAppState() {
+            File file = new File(context.getFilesDir(), "sara-state.json");
+            try {
+                if (file.exists() && file.length() > 1) {
+                    FileInputStream in = new FileInputStream(file);
+                    byte[] bytes = new byte[(int) file.length()]; int n = in.read(bytes); in.close();
+                    if (n > 0) return new String(bytes, 0, n, StandardCharsets.UTF_8);
+                }
+            } catch (Exception ignored) {}
             return context.getSharedPreferences("sara_app_data", Context.MODE_PRIVATE).getString("state", "");
         }
-        @JavascriptInterface public void saveAppState(String json) {
-            context.getSharedPreferences("sara_app_data", Context.MODE_PRIVATE).edit().putString("state", json).commit();
+        @JavascriptInterface public synchronized boolean saveAppState(String json) {
+            if (json == null || json.length() == 0) return false;
+            try {
+                File target = new File(context.getFilesDir(), "sara-state.json");
+                File temp = new File(context.getFilesDir(), "sara-state.tmp");
+                FileOutputStream out = new FileOutputStream(temp, false);
+                out.write(json.getBytes(StandardCharsets.UTF_8)); out.flush(); out.getFD().sync(); out.close();
+                if (target.exists() && !target.delete()) return false;
+                if (!temp.renameTo(target)) return false;
+                context.getSharedPreferences("sara_app_data", Context.MODE_PRIVATE).edit().putString("state", json).commit();
+                return true;
+            } catch (Exception e) { return false; }
         }
         private PendingIntent alarmIntent(String id, String title, String message, long interval) {
             Intent i = new Intent(context, ReminderReceiver.class); i.putExtra("title", title); i.putExtra("message", message); i.putExtra("repeat", interval > 0); i.putExtra("interval", interval);
