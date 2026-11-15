@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#f7f7f5"><title>Dayflow</title>
+<style>
+:root{--bg:#f7f7f5;--ink:#252733;--muted:#92949e;--blue:#5969d8;--line:#eeeef0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.app{height:100dvh;display:flex;flex-direction:column;max-width:620px;margin:auto;position:relative}
+header{height:58px;flex-shrink:0;padding:0 20px;display:flex;align-items:center;justify-content:space-between}
+.iconbtn{border:0;background:transparent;font-size:23px;color:#555968;width:38px;height:38px}
+.brand{font-size:22px;font-weight:850;letter-spacing:-1px}.brand span{color:var(--blue)}
+main{flex:1;overflow:auto;padding:14px 21px 100px}
+.greeting{display:flex;justify-content:space-between;align-items:center;margin:4px 0 22px}
+.eyebrow{font-size:10px;letter-spacing:1.25px;font-weight:800;color:var(--muted);margin-bottom:7px}
+h1{font-size:25px;letter-spacing:-.8px;margin:0;font-weight:800}.sub{font-size:12px;color:var(--muted);margin-top:5px}
+.avatar{width:42px;height:42px;border-radius:15px;background:#e8eafb;color:var(--blue);display:grid;place-items:center;font-weight:800}
+.card{background:white;border:1px solid var(--line);border-radius:19px;padding:17px;margin-bottom:25px}
+.row{display:flex;justify-content:space-between;align-items:center}
+.label{font-size:9px;letter-spacing:1.1px;font-weight:850;color:var(--muted)}
+.number{font-size:26px;font-weight:850;margin-top:4px}.number small{font-size:13px;font-weight:500;color:var(--muted)}
+.badge{background:#eef0ff;color:var(--blue);padding:7px 12px;border-radius:11px;font-size:12px;font-weight:800}
+.track{height:6px;background:#f0f0f2;border-radius:8px;overflow:hidden;margin-top:14px}.fill{height:100%;background:#6675e4;width:0;transition:width .2s}
+.hint{font-size:11px;color:var(--muted);margin-top:10px}
+.section{display:flex;justify-content:space-between;align-items:center;margin:0 0 15px}
+h2{font-size:19px;letter-spacing:-.4px;margin:0;font-weight:850}.caption{font-size:11px;color:#999ba4;margin-top:4px}
+.taskbox,.habitbox{background:white;border:1px solid var(--line);border-radius:17px;padding:14px 15px 3px}
+.grouphead{display:flex;justify-content:space-between;margin-bottom:5px}.grouphead span:first-child{font-size:9px;letter-spacing:1.1px;font-weight:850;color:#9b9da6}.grouphead span:last-child{font-size:10px;color:#a4a5ad}
+.task{min-height:66px;display:flex;align-items:center;border-bottom:1px solid #f1f1f2;gap:12px}
+.check{width:21px;height:21px;border:1.6px solid #c9cbd4;border-radius:7px;flex-shrink:0;background:white;color:white;font-size:13px}
+.check.done{background:#6675e4;border-color:#6675e4}
+.taskbody{flex:1;min-width:0}.tasktitle{font-size:13px;font-weight:700;overflow-wrap:anywhere}.tasktitle.done{text-decoration:line-through;color:#a7a8b0}
+.meta{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:10px;color:var(--muted)}.dot{width:6px;height:6px;border-radius:50%}
+.more{color:#a0a1a8;font-size:20px;padding:4px}
+.habitshead{display:flex;justify-content:space-between;align-items:center;margin:25px 0 12px}.see{color:var(--blue);font-size:11px;font-weight:800}
+.habit{height:61px;display:flex;align-items:center;border-bottom:1px solid #f1f1f2;gap:11px}.habit:last-child{border:0}
+.hicon{height:34px;width:34px;border-radius:11px;background:#f0f1fc;color:#6874c9;display:grid;place-items:center}
+.hname{font-size:12px;font-weight:750}.hcount{font-size:10px;color:#9a9ca5;margin-top:3px}
+.hcheck{margin-left:auto;border:1px solid #e2e3e8;background:white;border-radius:9px;width:25px;height:25px;color:#a5a7b1}
+.bottom{height:68px;flex-shrink:0;background:white;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:7px 4px 4px}
+.nav{border:0;background:none;flex:1;color:#999ba5;font-size:10px;font-weight:650;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.nav b{font-size:21px;font-weight:400}.nav.active{color:var(--blue)}.nav.active:before{content:"";height:2px;width:20px;border-radius:2px;background:var(--blue);position:absolute;top:0}
+.navwrap{position:relative;flex:1;display:flex}
+.fab{position:absolute;right:23px;bottom:84px;width:54px;height:54px;border:0;border-radius:19px;background:var(--blue);color:white;font-size:30px;box-shadow:0 5px 15px #5969d844}
+.empty{text-align:center;padding:20px 8px;color:#999ba4;font-size:12px}
+.placeholder{height:100%;min-height:400px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px}
+.picon{width:66px;height:66px;border-radius:22px;background:#eef0ff;color:var(--blue);display:grid;place-items:center;font-size:29px;margin-bottom:17px}
+.placeholder h2{font-size:24px}.placeholder p{font-size:13px;color:var(--muted);line-height:20px;max-width:260px}
+.modal{position:fixed;inset:0;background:#16182266;display:none;align-items:flex-end;justify-content:center}
+.sheet{width:100%;max-width:620px;background:white;border-radius:25px 25px 0 0;padding:22px 22px 34px}
+.handle{width:37px;height:4px;background:#e3e4e8;border-radius:4px;margin:0 auto 20px}
+.sheet h2{font-size:21px}.sheet p{font-size:12px;color:var(--muted);margin:5px 0 18px}
+input{width:100%;height:52px;border:1px solid #e8e8ec;border-radius:13px;padding:0 14px;font-size:15px;outline:none}
+.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:17px}.actions button{height:43px;border:0;border-radius:12px;padding:0 19px;font-weight:750}
+.cancel{background:white;color:#777985}.create{background:var(--blue);color:white}
+</style></head>
+<body><div class="app">
+<header><button class="iconbtn" aria-label="Menu">☰</button><div class="brand">dayflow<span>.</span></div><button class="iconbtn" aria-label="Search">⌕</button></header>
+<main id="content"></main>
+<button class="fab" id="fab" aria-label="Add task">+</button>
+<nav class="bottom" id="bottom"></nav>
+</div>
+<div class="modal" id="modal"><div class="sheet"><div class="handle"></div><h2>Create a task</h2><p>Capture it now. Organize it when you're ready.</p><input id="taskInput" placeholder="What needs to get done?"><div class="actions"><button class="cancel" id="cancel">Cancel</button><button class="create" id="create">Add task</button></div></div></div>
+<script>
+const initial=[{id:1,title:"Review project brief",time:"09:00 AM",tag:"Work",color:"#6475E8",done:false},{id:2,title:"Prepare weekly plan",time:"10:30 AM",tag:"Personal",color:"#D59B45",done:false},{id:3,title:"Read 20 pages",time:"01:00 PM",tag:"Learning",color:"#36A58A",done:true},{id:4,title:"Workout",time:"05:30 PM",tag:"Health",color:"#D9788D",done:false}];
+let tasks=JSON.parse(localStorage.getItem("dayflow.tasks")||"null")||initial;
+let active="Today";
+const tabs=[["Today","☼"],["Calendar","▦"],["Tasks","☷"],["Focus","◷"],["Profile","○"]];
+const save=()=>localStorage.setItem("dayflow.tasks",JSON.stringify(tasks));
+function render(){
+ const done=tasks.filter(t=>t.done).length,pct=tasks.length?Math.round(done/tasks.length*100):0;
+ document.getElementById("bottom").innerHTML=tabs.map(([n,i])=>`<div class="navwrap"><button class="nav ${active===n?'active':''}" data-tab="${n}"><b>${i}</b>${n}</button></div>`).join("");
+ document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{active=b.dataset.tab;render()});
+ const date=new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"}).toUpperCase();
+ if(active==="Today"){
+ const taskRows=(arr)=>arr.map(t=>`<div class="task"><button class="check ${t.done?'done':''}" data-check="${t.id}">${t.done?'✓':''}</button><div class="taskbody"><div class="tasktitle ${t.done?'done':''}">${escapeHtml(t.title)}</div><div class="meta"><i class="dot" style="background:${t.color}"></i>${escapeHtml(t.tag)} <span>·</span> ${escapeHtml(t.time)}</div></div>${t.priority==='High'?'<i class="dot" style="background:#e17d76"></i>':''}<span class="more">···</span></div>`).join("");
+ document.getElementById("content").innerHTML=`
+ <div class="greeting"><div><div class="eyebrow">${date}</div><h1>Good day</h1><div class="sub">A little progress goes a long way.</div></div><div class="avatar">D</div></div>
+ <div class="card"><div class="row"><div><div class="label">TODAY'S PROGRESS</div><div class="number">${done}<small> / ${tasks.length} tasks</small></div></div><div class="badge">${pct}%</div></div><div class="track"><div class="fill" style="width:${pct}%"></div></div><div class="hint">${pct===100?"Everything is done. Nice work!":"Keep going. You're building momentum."}</div></div>
+ <div class="section"><div><h2>Your day</h2><div class="caption">A clear plan for what matters.</div></div><span>☷</span></div>
+ <div class="taskbox"><div class="grouphead"><span>UP NEXT</span><span>${tasks.filter(t=>!t.done).length} tasks</span></div>${taskRows(tasks.filter(t=>!t.done))||'<div class="empty">Nothing pending. Enjoy the space.</div>'}</div>
+ ${done?`<div style="height:22px"></div><div class="taskbox"><div class="grouphead"><span>COMPLETED</span><span>${done} done</span></div>${taskRows(tasks.filter(t=>t.done))}</div>`:""}
+ <div class="habitshead"><h2>Daily habits</h2><span class="see">See all</span></div>
+ <div class="habitbox"><div class="habit"><div class="hicon">▤</div><div><div class="hname">Reading</div><div class="hcount">12 day streak</div></div><button class="hcheck">✓</button></div><div class="habit"><div class="hicon">♧</div><div><div class="hname">Drink water</div><div class="hcount">5 / 8 glasses</div></div><button class="hcheck">✓</button></div><div class="habit"><div class="hicon">↗</div><div><div class="hname">Movement</div><div class="hcount">Not started</div></div><button class="hcheck">✓</button></div></div>`;
+ } else {
+ const info={Calendar:["▦","Calendar","See your tasks and plans across the week."],Tasks:["☷","Tasks","All your lists, priorities, and projects in one place."],Focus:["◷","Focus","Make room for deep work, one session at a time."],Profile:["○","Profile","Your preferences and productivity insights."]}[active];
+ document.getElementById("content").innerHTML=`<div class="placeholder"><div class="picon">${info[0]}</div><h2>${info[1]}</h2><p>${info[2]}</p></div>`;
+ }
+ document.querySelectorAll("[data-check]").forEach(b=>b.onclick=()=>{tasks=tasks.map(t=>t.id==b.dataset.check?{...t,done:!t.done}:t);save();render()});
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+const modal=document.getElementById("modal"),input=document.getElementById("taskInput");
+document.getElementById("fab").onclick=()=>{modal.style.display="flex";input.focus()};
+document.getElementById("cancel").onclick=()=>modal.style.display="none";
+document.getElementById("create").onclick=addTask;
+input.addEventListener("keydown",e=>{if(e.key==="Enter")addTask()});
+modal.addEventListener("click",e=>{if(e.target===modal)modal.style.display="none"});
+function addTask(){let title=input.value.trim();if(!title)return;tasks.push({id:Date.now(),title,time:"Anytime",tag:"Inbox",color:"#8A8D98",done:false});save();input.value="";modal.style.display="none";active="Today";render()}
+render();
+</script></body></html>
