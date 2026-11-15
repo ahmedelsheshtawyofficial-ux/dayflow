@@ -23,3 +23,11 @@ The workflow is `.github/workflows/build-apk.yml`. Push to `main` or run it manu
 - Android exact-alarm access and notification permission depend on Android version and device settings. Reminder scheduling is best-effort; battery restrictions may affect delivery.
 - Challenge progress is currently user-recorded. Points are awarded once per completed task; changing a completed task back to incomplete reverses its task points.
 - The project uses the same simple Android/Gradle build pattern as the supplied Mahamy project, but no Mahamy UI or app functionality is copied.
+
+
+## UI Update v2 (2026-11-16)
+- Redesigned the Rewards Store as a visual collection/shop with reward cards, category icons, descriptions, point prices, and redemption actions.
+- Reward creation now supports a name, description, icon/category, and point cost.
+- Added responsive sizing for narrow Android phones and larger screens.
+- Improved bottom navigation, floating action button, modal safe-area spacing, and page bottom padding to reduce overlap/clipping on different screen heights.
+- Existing saved rewards remain compatible; older rewards receive default icons and descriptions.
