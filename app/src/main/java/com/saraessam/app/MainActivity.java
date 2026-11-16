@@ -19,6 +19,8 @@ import android.content.pm.PackageManager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
+import org.json.JSONObject;
 import java.nio.charset.StandardCharsets;
 
 public class MainActivity extends Activity {
@@ -46,27 +48,51 @@ public class MainActivity extends Activity {
         // Durable state: atomic private-file write, with SharedPreferences as a recovery copy.
         @JavascriptInterface public synchronized String loadAppState() {
             File file = new File(context.getFilesDir(), "sara-state.json");
-            try {
-                if (file.exists() && file.length() > 1) {
-                    FileInputStream in = new FileInputStream(file);
-                    byte[] bytes = new byte[(int) file.length()]; int n = in.read(bytes); in.close();
-                    if (n > 0) return new String(bytes, 0, n, StandardCharsets.UTF_8);
-                }
-            } catch (Exception ignored) {}
-            return context.getSharedPreferences("sara_app_data", Context.MODE_PRIVATE).getString("state", "");
+            String fromFile = readCompleteFile(file);
+            if (isValidStateJson(fromFile)) return fromFile;
+            // Recovery copy is deliberately checked even if the primary file exists but is corrupt.
+            String backup = context.getSharedPreferences("sara_app_data", Context.MODE_PRIVATE).getString("state", "");
+            if (isValidStateJson(backup)) return backup;
+            File legacy = new File(context.getFilesDir(), "sara-state.bak");
+            String old = readCompleteFile(legacy);
+            return isValidStateJson(old) ? old : "";
+        }
+        private String readCompleteFile(File file) {
+            if (!file.exists() || file.length() <= 1 || file.length() > 20_000_000) return "";
+            try (FileInputStream in = new FileInputStream(file); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+                byte[] buffer = new byte[8192]; int count;
+                while ((count = in.read(buffer)) != -1) out.write(buffer, 0, count);
+                return out.toString("UTF-8");
+            } catch (Exception e) { return ""; }
+        }
+        private boolean isValidStateJson(String json) {
+            if (json == null || json.trim().isEmpty()) return false;
+            try { new JSONObject(json); return true; } catch (Exception e) { return false; }
         }
         @JavascriptInterface public synchronized boolean saveAppState(String json) {
-            if (json == null || json.length() == 0) return false;
+            if (!isValidStateJson(json)) return false;
+            File target = new File(context.getFilesDir(), "sara-state.json");
+            File temp = new File(context.getFilesDir(), "sara-state.tmp");
+            File backup = new File(context.getFilesDir(), "sara-state.bak");
             try {
-                File target = new File(context.getFilesDir(), "sara-state.json");
-                File temp = new File(context.getFilesDir(), "sara-state.tmp");
-                FileOutputStream out = new FileOutputStream(temp, false);
-                out.write(json.getBytes(StandardCharsets.UTF_8)); out.flush(); out.getFD().sync(); out.close();
-                if (target.exists() && !target.delete()) return false;
-                if (!temp.renameTo(target)) return false;
-                context.getSharedPreferences("sara_app_data", Context.MODE_PRIVATE).edit().putString("state", json).commit();
-                return true;
-            } catch (Exception e) { return false; }
+                try (FileOutputStream out = new FileOutputStream(temp, false)) {
+                    out.write(json.getBytes(StandardCharsets.UTF_8)); out.flush(); out.getFD().sync();
+                }
+                // Keep the previous good file until the replacement is safely written.
+                if (target.exists()) {
+                    if (backup.exists()) backup.delete();
+                    if (!target.renameTo(backup)) return false;
+                }
+                if (!temp.renameTo(target)) {
+                    if (backup.exists()) backup.renameTo(target);
+                    return false;
+                }
+                boolean prefSaved = context.getSharedPreferences("sara_app_data", Context.MODE_PRIVATE).edit().putString("state", json).commit();
+                return target.exists() && target.length() > 1 && prefSaved;
+            } catch (Exception e) {
+                if (!target.exists() && backup.exists()) backup.renameTo(target);
+                return false;
+            }
         }
         private PendingIntent alarmIntent(String id, String title, String message, long interval) {
             Intent i = new Intent(context, ReminderReceiver.class); i.putExtra("title", title); i.putExtra("message", message); i.putExtra("repeat", interval > 0); i.putExtra("interval", interval);
